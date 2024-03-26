@@ -10,27 +10,17 @@
  */
 class Solution {
     public ListNode insertGreatestCommonDivisors(ListNode head) {
-        ListNode curr = head;
-        ListNode prev = null;
-        while(curr.next != null) {
-            prev = curr;
-            curr = curr.next;
-            ListNode temp = new ListNode(gcd(prev.val, curr.val));
-            temp.next = prev.next;
-            prev.next = temp;
+        ListNode temp = head;
+        while(temp.next != null){
+            int gcd = findGcd(temp.val, temp.next.val);
+            ListNode i = new ListNode(gcd, temp.next);
+            temp.next = i;
+            temp = i.next;
         }
         return head;
     }
-
-    int gcd(int x, int y) {
-        int greater = x > y ? x : y;
-        int smaller = x < y ? x : y;
-        int res = smaller;
-        while(greater % smaller != 0) {
-            res = greater % smaller;
-            greater = smaller;
-            smaller = res;
-        }
-        return res;
+    public int findGcd(int l, int s){
+        if(l % s == 0)  return s;
+        return findGcd(s, l%s);
     }
 }
