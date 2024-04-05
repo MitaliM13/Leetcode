@@ -1,17 +1,24 @@
 class Solution {
     public String makeGood(String s) {
-        Stack<Character> stack = new Stack<>();
-        for(char ch: s.toCharArray()){
-            if(!stack.isEmpty() && Math.abs(ch - stack.peek())==32){
-                stack.pop();
-            } else{
-                stack.push(ch);
+        StringBuilder sb=new StringBuilder();
+        sb.append(s);
+        int flag=0;
+        while(flag==0&&sb.length()>0){
+            flag=1;
+            for(int i=0;i<sb.length()-1;i++){
+                if(isGreat(sb,i)){
+                    sb.delete(i,i+2);
+                    flag=0;
+                }
             }
         }
-        StringBuilder result = new StringBuilder();
-        while(!stack.isEmpty()){
-            result.insert(0,stack.pop());
-        }
-        return result.toString();
+        return sb.toString();     
+    }
+    public static boolean isGreat(StringBuilder sb,int i){
+        if(Integer.valueOf(sb.charAt(i))==Integer.valueOf(sb.charAt(i+1))+32||Integer.valueOf(sb.charAt(i))==Integer.valueOf(sb.charAt(i+1))-32){
+        
+            return true;
+        } 
+        return false;
     }
 }
