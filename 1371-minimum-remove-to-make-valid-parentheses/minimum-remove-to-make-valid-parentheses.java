@@ -1,29 +1,44 @@
+
 class Solution {
     public String minRemoveToMakeValid(String s) {
-        int n = s.length();
-        boolean[] vis = new boolean[n];
-        Stack<Integer> st = new Stack<>();
-        for(int i = 0; i<n;i++){
-            if(Character.isLowerCase(s.charAt(i)))
-                continue;
-            if(s.charAt(i) == '('){
-                st.push(i);
-            } else {
-                if(!st.isEmpty()){
-                    st.pop();
-                } else{
-                    vis[i] = true;
-                }
+        int startPointer = 0;
+        int endPointer = s.length() - 1;
+
+        String startPart = "";
+        String endPart = "";
+        String result;
+
+        char[] arr = s.toCharArray();
+
+        int openParenthesesCount = 0;
+
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == '(')
+                openParenthesesCount++;
+            else if (arr[i] == ')') {
+                if (openParenthesesCount == 0)
+                    arr[i] = '*'; // Mark excess closing parentheses
+                else
+                    openParenthesesCount--;
             }
         }
-        while(!st.isEmpty()){
-            vis[st.pop()] = true;
+
+        // Second pass: mark excess opening parentheses from the end
+        for (int i = arr.length - 1; i >= 0; i--) {
+            if (openParenthesesCount > 0 && arr[i] == '(') {
+                arr[i] = '*'; 
+                openParenthesesCount--;
+            }
         }
-        StringBuilder ans = new StringBuilder();
-        for(int i = 0; i<n; i++){
-            if(!vis[i])
-            ans.append(s.charAt(i));
+        
+        int p = 0; 
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != '*')
+                arr[p++] = arr[i];
         }
-        return ans.toString();
+
+        result = new String(arr).substring(0, p);
+
+        return result;
     }
 }
