@@ -1,20 +1,18 @@
 class Solution {
     public int[] deckRevealedIncreasing(int[] deck) {
-       Arrays.sort(deck);
-       int n = deck.length;
-       int[]res = new int[n];
-       Deque <Integer> ind = new LinkedList<>();
-
-       for(int i = 0; i < n; i++){
-        ind.add(i);
-       }
-       for(int card:deck){
-        int idx = ind.poll();
-        res[idx] = card;
-        if(!ind.isEmpty()){
-            ind.add(ind.poll());
+        int n=deck.length;
+        Arrays.sort(deck);
+        Deque <Integer> st=new ArrayDeque<>();
+        st.addFirst(deck[n-1]);
+        for(int i=n-2;i>=0;i--){
+            st.addFirst(st.removeLast());
+            st.addFirst(deck[i]);
         }
-       }
-       return res;
+        //we can either create a new array or change the existing since we dont need it right??but it is not recommended 
+
+        for(int i=0;i<n;i++){
+            deck[i]=(int)st.removeFirst();
+        }
+        return deck;
     }
 }
