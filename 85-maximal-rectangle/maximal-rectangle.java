@@ -1,41 +1,29 @@
 class Solution {
-    public int maximalRectangle(char[][] mat) {
-        int n=mat.length;
-        int m=mat[0].length;
-        int [] ht=new int[m];
-        int max=0;
-        for(int i=0;i<n;i++){
-            for(int j=0;j<m;j++){
-                if(mat[i][j] == '1') ht[j] ++;
-                else ht[j] =0;
-            }
-            int area=largest(ht,m);
-            max=Math.max(area,max);
+    public int maximalRectangle(char[][] matrix) {
+        if(matrix.length == 0)
+        return 0;
+
+        int res = 0;
+        int[] hist = new int[matrix[0].length];
+
+        for(char[] row : matrix){
+            for (int i = 0; i<row.length;++i)
+            hist[i] = row[i] == '0' ? 0 : hist[i] + 1;
+            res = Math.max(res,largestRectangleArea(hist));
         }
-        return max;
+        return res;
     }
-    public int largest(int [] heights,int n){
-        int max=0;
-        Stack<Integer> st=new Stack<>();
-        st.push(0);
-        int i;
-        for(i=1;i<n;i++){
-            while(!st.isEmpty() && heights[i] <= heights[st.peek()]){
-                max=lar(i,st,heights,max);
+    private int largestRectangleArea(int[] h){
+        int res = 0;
+        Deque<Integer> stack = new ArrayDeque<>();
+        for(int i = 0; i<= h.length; ++i){
+            while(!stack.isEmpty() && (i == h.length || h[stack.peek()]>h[i])){
+                final int a = h[stack.pop()];
+                final int w = stack.isEmpty()? i: i - stack.peek() - 1;
+                res = Math.max(res, a*w);
             }
-            st.push(i);
+            stack.push(i);
         }
-        
-        while(!st.isEmpty()){
-            max=lar(n,st,heights,max);
-        }
-        return max;
-    }
-    public int lar(int i,Stack<Integer> st,int [] hts,int max){
-        int m=0;
-        int ht=hts[st.pop()];
-        if(st.isEmpty()) m=ht * i;
-        else m=ht * (i - 1 - st.peek());
-        return Math.max(m,max);
+        return res;
     }
 }
