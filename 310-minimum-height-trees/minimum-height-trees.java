@@ -1,44 +1,46 @@
-import java.util.*;
 
-public class Solution {
+
+import static java.lang.System.err;
+
+class Solution {
     public List<Integer> findMinHeightTrees(int n, int[][] edges) {
-        if (n == 1) {
-            return Collections.singletonList(0);
-        }
-
-        // Construct the adjacency list representation of the tree
-        List<Set<Integer>> adjList = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            adjList.add(new HashSet<>());
-        }
-        for (int[] edge : edges) {
-            adjList.get(edge[0]).add(edge[1]);
-            adjList.get(edge[1]).add(edge[0]);
-        }
-
-        // Initialize a queue with all leaf nodes
-        Queue<Integer> leaves = new LinkedList<>();
-        for (int i = 0; i < n; i++) {
-            if (adjList.get(i).size() == 1) {
-                leaves.offer(i);
+        List<Integer> res = new ArrayList<>();
+        if(n < 2){
+            for(int i = 0; i < n; i++){
+                res.add(i);
             }
+            return res;
         }
 
-        // Perform BFS to remove layers of nodes until one or two nodes remain
-        while (n > 2) {
-            int size = leaves.size();
-            n -= size;
-            for (int i = 0; i < size; i++) {
-                int leaf = leaves.poll();
-                int neighbor = adjList.get(leaf).iterator().next();
-                adjList.get(neighbor).remove(leaf);
-                if (adjList.get(neighbor).size() == 1) {
-                    leaves.offer(neighbor);
-                }
-            }
+         ArrayList<Set<Integer>> neighbors = new ArrayList<>();
+         for(int i = 0; i < n; i ++){
+             neighbors.add(new HashSet<Integer>());
+         }
+         for (int[] edge : edges) {
+            Integer start = edge[0], end = edge[1];
+            neighbors.get(start).add(end);
+            neighbors.get(end).add(start);
         }
+         ArrayList<Integer> leaves = new ArrayList<>();
+         for(int i = 0; i < n; i ++){
+             if(neighbors.get(i).size() == 1)
+                leaves.add(i);
+         }
+         int remain = n;
 
-        // The remaining nodes are the roots of the MHTs
-        return new ArrayList<>(leaves);
+         while(remain > 2){
+             remain = remain - leaves.size();
+             ArrayList<Integer> newLeaves = new ArrayList<>();
+             for(Integer leaf : leaves){
+                 for(Integer neighbor : neighbors.get(leaf)){
+                     neighbors.get(neighbor).remove(leaf);
+                     if(neighbors.get(neighbor).size() == 1)
+                        newLeaves.add(neighbor);
+                 }
+             }
+             leaves = newLeaves;
+
+         }
+         return leaves;
     }
 }
