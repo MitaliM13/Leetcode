@@ -9,17 +9,25 @@
  * }
  */
 class Solution {
-    public ListNode removeNodes(ListNode head) { 
-        if(head == null){
-            return null;
+    public ListNode removeNodes(ListNode head) {
+        ListNode cur = head;
+        Stack<ListNode> stack = new Stack<>();
+        
+        while (cur != null) {
+            while (!stack.isEmpty() && stack.peek().val < cur.val) {
+                ListNode a = stack.pop();
+            }
+            stack.push(cur);
+            cur = cur.next;
         }
-        ListNode curr = head;
-        ListNode nxt = removeNodes(curr.next);
-
-        curr.next = nxt;
-        if(nxt == null || curr.val >= nxt.val){
-            return curr;
+        
+        ListNode nxt = null;
+        while (!stack.isEmpty()) {
+            cur = stack.pop();
+            cur.next = nxt;
+            nxt = cur;
         }
-        return nxt;
+        
+        return cur;
     }
 }
