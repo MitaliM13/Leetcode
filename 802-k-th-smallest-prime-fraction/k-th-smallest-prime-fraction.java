@@ -1,50 +1,40 @@
-import java.util.*;
-
 class Solution {
     public int[] kthSmallestPrimeFraction(int[] arr, int k) {
-        Arrays.sort(arr);
-        PriorityQueue<Pair<Double, Pair<Integer, Integer>>> maxHeap = new PriorityQueue<>(
-                (a, b) -> Double.compare(b.getKey(), a.getKey()));
         int n = arr.length;
+        double left = 0, right = 1, mid;
+        int[] res = new int[2];
 
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = i + 1; j < n; j++) {
-                double fraction = (double) arr[i] / arr[j];
-                maxHeap.offer(new Pair<>(fraction, new Pair<>(arr[i], arr[j])));
-
-                if (maxHeap.size() > k) {
-                    maxHeap.poll();
+        while (left <= right) {
+            mid = left + (right - left) / 2;
+            int j = 1, total = 0, num = 0, den = 0;
+            double maxFrac = 0;
+            for (int i = 0; i < n; ++i) {
+                while (j < n && arr[i] >= arr[j] * mid) {
+                    ++j;
                 }
+                
+                total += n - j;
+
+                if (j < n && maxFrac < arr[i] * 1.0 / arr[j]) {
+                    maxFrac = arr[i] * 1.0 / arr[j];
+                    num = i;
+                    den = j;
+                }
+            }
+
+            if (total == k) {
+                res[0] = arr[num];
+                res[1] = arr[den];
+                break;
+            }
+
+            if (total > k) {
+                right = mid;
+            } else {
+                left = mid;
             }
         }
 
-        Pair<Integer, Integer> res = maxHeap.poll().getValue();
-        return new int[]{res.getKey(), res.getValue()};
-    }
-
-    public static void main(String[] args) {
-        int[] arr = {1, 2, 3, 5, 7};
-        int k = 3;
-        Solution solution = new Solution();
-        int[] result = solution.kthSmallestPrimeFraction(arr, k);
-        System.out.println(Arrays.toString(result));
-    }
-}
-
-class Pair<K, V> {
-    private final K key;
-    private final V value;
-
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public K getKey() {
-        return key;
-    }
-
-    public V getValue() {
-        return value;
+        return res;
     }
 }
