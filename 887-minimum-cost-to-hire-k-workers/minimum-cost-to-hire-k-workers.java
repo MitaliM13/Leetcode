@@ -1,22 +1,46 @@
 class Solution {
-    public double mincostToHireWorkers(int[] quality, int[] wage, int K) {
-    
-        int n = wage.length;
-        double[][] workers = new double[n][2];
-        for (int i = 0; i < n; i++){
-            workers[i] = new double[]{(double)wage[i]/quality[i], (double)quality[i]};
+
+    class pair implements Comparable<pair>{
+        double a;
+        int b;
+        pair(double a,int b) {
+            this.a = a;
+            this.b = b;
         }
-        
-        Arrays.sort(workers, (a, b) -> Double.compare(a[0], b[0]));
-        
-        PriorityQueue<Double> pq = new PriorityQueue<>((a,b)->Double.compare(b, a));
-        double qsum = 0, res = Double.MAX_VALUE;
-        for (double[] work : workers){
-            qsum += work[1];
-            pq.offer(work[1]);
-            if (pq.size() > K) qsum -= pq.poll();
-            if (pq.size() == K) res = Math.min(res, qsum * work[0]);
+        public int compareTo(pair p) {
+            if(this.a > p.a) return 1;
+            else if(this.a < p.a) return -1;
+            return 0;
         }
-        return res;
+    }
+
+    public double mincostToHireWorkers(int[] q, int[] w, int k) {
+        int n = q.length;
+        List<pair> as = new ArrayList<>();
+        for(int i=0;i<n;i++) {
+            double ratio = (double) w[i] / (double) q[i];
+            as.add(new pair(ratio,q[i]));
+        }
+        Collections.sort(as);
+        // for(pair p : as) System.out.println(p.a);
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        int sum = 0;
+        for(int i=0;i<k;i++) {
+            sum += as.get(i).b;
+            pq.add(as.get(i).b);
+        }
+        double ratio = as.get(k-1).a;
+        double ans = ratio * sum;
+        for(int i=k;i<n;i++) {
+            ratio = as.get(i).a;
+            if(pq.isEmpty() == false || pq.peek() > w[i]) {
+                sum -= pq.peek();
+                pq.poll();
+                sum += as.get(i).b;
+                pq.add(as.get(i).b);
+            }
+            ans = Math.min(ans,ratio * sum);
+        }
+        return ans;
     }
 }
