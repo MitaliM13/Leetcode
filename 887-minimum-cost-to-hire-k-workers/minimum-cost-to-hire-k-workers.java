@@ -1,54 +1,22 @@
 class Solution {
-    public double mincostToHireWorkers(int[] quality, int[] wage, int k) {
-        int n = quality.length;
-        double minCost = Double.MAX_VALUE;
-        double qualityTillNow = 0;
-
-        List<Worker> workers = new ArrayList<>();
-
-        for (int i = 0; i < n; i++) {
-            workers.add(new Worker(wage[i] / (double) quality[i], quality[i]));
+    public double mincostToHireWorkers(int[] quality, int[] wage, int K) {
+    
+        int n = wage.length;
+        double[][] workers = new double[n][2];
+        for (int i = 0; i < n; i++){
+            workers[i] = new double[]{(double)wage[i]/quality[i], (double)quality[i]};
         }
-
-        // Sorting workers by their wage-quality ratio
-        Collections.sort(workers);
-
-        // Max-heap for the qualities using a comparator
-        PriorityQueue<Integer> highQualityWorkers = new PriorityQueue<>(Comparator.reverseOrder());
-
-        for (Worker worker : workers) {
-            double ratio = worker.ratio;
-            int qua = worker.quality;
-
-            qualityTillNow += qua;
-            highQualityWorkers.add(qua);
-
-            if (highQualityWorkers.size() > k) {
-                qualityTillNow -= highQualityWorkers.poll();
-            }
-
-            if (highQualityWorkers.size() == k) {
-                minCost = Math.min(minCost, qualityTillNow * ratio);
-            }
+        
+        Arrays.sort(workers, (a, b) -> Double.compare(a[0], b[0]));
+        
+        PriorityQueue<Double> pq = new PriorityQueue<>((a,b)->Double.compare(b, a));
+        double qsum = 0, res = Double.MAX_VALUE;
+        for (double[] work : workers){
+            qsum += work[1];
+            pq.offer(work[1]);
+            if (pq.size() > K) qsum -= pq.poll();
+            if (pq.size() == K) res = Math.min(res, qsum * work[0]);
         }
-
-        return minCost;
-    }
-
-    // Helper class to store the ratio and quality and implement comparable for
-    // sorting
-    private class Worker implements Comparable<Worker> {
-        double ratio;
-        int quality;
-
-        Worker(double ratio, int quality) {
-            this.ratio = ratio;
-            this.quality = quality;
-        }
-
-        @Override
-        public int compareTo(Worker other) {
-            return Double.compare(this.ratio, other.ratio);
-        }
+        return res;
     }
 }
