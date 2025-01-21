@@ -1,11 +1,30 @@
 class Solution {
     public String reverseWords(String s) {
-        String[] str = s.trim().replaceAll(" +"," ").split(" ");
-        StringBuilder Ans = new StringBuilder();
+        Stack <String> st = new Stack<>();
+        String word = "";
 
-        for(int i = str.length - 1; i>=0; i--){
-            Ans.append(str[i] + " ");
+        for(int i = 0; i<s.length(); i++){
+            if(s.charAt(i) == ' '){
+                if(!word.isEmpty()){
+                    st.push(word);
+                    word = "";
+                }
+            } else {
+                word += s.charAt(i);
+            }
         }
-        return Ans.toString().trim();
+
+        if(!word.isEmpty()){
+            st.push(word);
+        }
+
+        String ans = "";
+        while(!st.isEmpty()){
+            ans += st.pop();
+            if(!st.isEmpty()){
+                ans += " ";
+            }
+        }
+        return ans;
     }
 }
