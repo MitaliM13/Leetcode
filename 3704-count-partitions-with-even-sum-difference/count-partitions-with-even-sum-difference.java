@@ -12,8 +12,8 @@ class Solution {
 
         for(int i = 0; i<n-1; i++){
             leftS += nums[i];
-            int diff = leftS- totalSum - leftS;
-            if(diff%2 == 0){
+            int diff = totalSum - leftS;
+            if((leftS % 2) == (diff%2)){
                 cnt++;
             }
         }
